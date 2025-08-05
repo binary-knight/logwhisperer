@@ -1,0 +1,23 @@
+# requirements-dev.txt - Development dependencies
+-r requirements-test.txt
+
+# Development tools
+ipython>=8.17.2
+ipdb>=0.13.13
+rich>=13.7.0
+
+# Build tools
+nuitka>=1.8.4
+build>=1.0.3
+wheel>=0.41.3
+setuptools>=68.2.2
+
+# Documentation
+mkdocs>=1.5.3
+mkdocs-material>=9.4.8
+
+# Pre-commit hooks
+pre-commit>=3.5.0
+
+# Hot reloading for development
+watchdog>=3.0.0

@@ -1,0 +1,19 @@
+#!/bin/bash
+# LogWhisperer Web Dashboard wrapper - Production
+
+cd /opt/logwhisperer/web
+source /opt/logwhisperer/web-venv/bin/activate
+export LOGWHISPERER_CONFIG="/etc/logwhisperer/config.yaml"
+export LOGWHISPERER_DEV_MODE="true"
+export LOGWHISPERER_DEV_KEY="germangreenhousefour"
+
+# Production server using gunicorn
+exec gunicorn \
+    --workers 2 \
+    --bind 0.0.0.0:5123 \
+    --timeout 120 \
+    --keepalive 5 \
+    --log-level info \
+    --access-logfile - \
+    --error-logfile - \
+    dashboard:app

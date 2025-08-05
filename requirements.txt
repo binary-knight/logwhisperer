@@ -1,2 +1,4 @@
-pyyaml
-requests
+# requirements.txt - Production dependencies only
+pyyaml>=6.0.1
+requests>=2.31.0
+cryptography>=41.0.0

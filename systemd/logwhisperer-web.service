@@ -1,0 +1,37 @@
+[Unit]
+Description=LogWhisperer Web Dashboard
+Documentation=https://github.com/yourusername/logwhisperer
+After=network-online.target logwhisperer.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/logwhisperer-web
+WorkingDirectory=/opt/logwhisperer
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/logwhisperer/web.log
+StandardError=append:/var/log/logwhisperer/web.error.log
+
+# Run as dedicated user for security
+User=logwhisperer
+Group=logwhisperer
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log/logwhisperer /opt/logwhisperer/reports /opt/logwhisperer/web/templates
+
+# Resource limits
+LimitNOFILE=65536
+MemoryLimit=512M
+
+# Environment
+Environment="PYTHONUNBUFFERED=1"
+Environment="LOGWHISPERER_CONFIG=/etc/logwhisperer/config.yaml"
+Environment="FLASK_ENV=production"
+
+[Install]
+WantedBy=multi-user.target

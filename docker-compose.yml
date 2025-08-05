@@ -1,0 +1,126 @@
+version: '3.8'
+
+services:
+  # LogWhisperer with integrated Ollama
+  logwhisperer:
+    image: logwhisperer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILD_DATE: ${BUILD_DATE:-$(date -u +"%Y-%m-%dT%H:%M:%SZ")}
+        VCS_REF: ${VCS_REF:-$(git rev-parse --short HEAD)}
+        VERSION: ${VERSION:-latest}
+    container_name: logwhisperer
+    restart: unless-stopped
+    environment:
+      # LogWhisperer configuration
+      - LOGWHISPERER_CONFIG=/etc/logwhisperer/config.yaml
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-}
+      
+      # Ollama configuration (using integrated Ollama)
+      - OLLAMA_HOST=http://localhost:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-mistral}
+      - OLLAMA_MODELS_DIR=/opt/logwhisperer/models
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      # Configuration
+      - ./config.yaml:/etc/logwhisperer/config.yaml:ro
+      
+      # Persistent data
+      - logwhisperer_logs:/var/log/logwhisperer
+      - logwhisperer_reports:/opt/logwhisperer/reports
+      - logwhisperer_models:/opt/logwhisperer/models
+      
+      # For monitoring host logs (optional)
+      - /var/log:/host/logs:ro
+      
+      # For monitoring Docker logs (optional)
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - logwhisperer
+    healthcheck:
+      test: ["CMD", "logwhisperer", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    # Uncomment to expose Ollama API externally
+    # ports:
+    #   - "11434:11434"
+
+  # Separate Ollama service (alternative setup)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    profiles:
+      - external-ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    networks:
+      - logwhisperer
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # LogWhisperer using external Ollama
+  logwhisperer-external:
+    extends:
+      service: logwhisperer
+    profiles:
+      - external-ollama
+    environment:
+      - LOGWHISPERER_CONFIG=/etc/logwhisperer/config.yaml
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-}
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-mistral}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  # Development version with source code mounted
+  logwhisperer-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: logwhisperer-dev
+    profiles:
+      - development
+    environment:
+      - LOGWHISPERER_CONFIG=/etc/logwhisperer/config.yaml
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-}
+      - OLLAMA_HOST=http://localhost:11434
+      - PYTHONUNBUFFERED=1
+      - LOG_LEVEL=DEBUG
+    volumes:
+      # Mount source code for development
+      - .:/app:ro
+      - ./config.yaml:/etc/logwhisperer/config.yaml:ro
+      - logwhisperer_logs:/var/log/logwhisperer
+      - logwhisperer_reports:/opt/logwhisperer/reports
+      - logwhisperer_models:/opt/logwhisperer/models
+    networks:
+      - logwhisperer
+    command: python /app/logwhisperer.py monitor
+
+networks:
+  logwhisperer:
+    driver: bridge
+
+volumes:
+  logwhisperer_logs:
+    driver: local
+  logwhisperer_reports:
+    driver: local
+  logwhisperer_models:
+    driver: local
+  ollama_data:
+    driver: local

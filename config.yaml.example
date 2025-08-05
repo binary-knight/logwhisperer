@@ -1,0 +1,229 @@
+# --- Model & LLM settings ---
+
+# The name of the LLM model to use via the Ollama API
+# You can run `ollama list` to see installed models or pull your own.
+# Examples: mistral, llama2, codellama, phi, gemma, tinyllama, dolphin-mixtral
+model: mistral
+
+# --- Log source settings ---
+
+# The source of logs to process. Options:
+# - journalctl: Reads from systemd journal logs
+# - file: Tails a log file (e.g., /var/log/syslog) (requires log_file_path setting)
+# - docker: Reads logs from a Docker container using `docker logs` (requires docker_container setting)
+source: journalctl
+
+# Path to a specific log file, only used when source is 'file'
+log_file_path: /var/log/syslog
+
+# For journalctl, sets the log priority level filter.
+# Accepted values: emerg, alert, crit, err, warning, notice, info, debug
+priority: err
+
+# Number of log entries to fetch for one-time summarization (Open-Source mode)
+entries: 2000
+
+# Timeout (in seconds) for LLM API requests
+timeout: 120
+
+# For Docker log monitoring: specify a container name or ID
+docker_container: my_container
+
+# Host/port of the Ollama API. Use a remote IP if running Ollama elsewhere
+ollama_host: http://localhost:11434
+
+# Number of log lines to include in each prompt sent to the LLM.
+# Helps control cost, prompt length, and summarization granularity.
+lines_per_prompt: 50  # Reduce this for reliability
+timeout: 180  # Increase base timeout
+max_retries: 3
+chunking_enabled: true
+chunk_size: 200  # Lines per chunk
+
+# --- Prompt template for the LLM ---
+
+# This is the prompt sent to the LLM for log summarization.
+# '{{LOGS}}' will be replaced with the actual log content.
+prompt: |
+  You are a helpful Linux operations assistant. Analyze the following logs:
+  - Identify root causes
+  - Summarize key issues
+  - Recommend next steps
+
+  LOGS:
+  {{LOGS}}
+
+# --- Real-time monitor configuration ---
+
+monitor: # Real-time monitoring is only available in PRO.
+  enabled: true  # Enables the real-time monitoring agent
+
+  # Minimum severity level required to trigger an alert.
+  # Logs below this threshold will not result in Discord alerts.
+  # Hierarchy (lowest to highest): INFO < NOTICE < WARNING < ERROR < CRITICAL < FATAL
+  escalation_level: ERROR
+
+  # Number of new lines to batch before processing and evaluating for alerting
+  batch_size: 50
+
+  # Time interval (in seconds) between log reads when monitoring in real-time
+  sleep_interval: 1.0
+
+  # Discord webhook URL to send alerts to (required for alert delivery)
+  webhook_url: https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN
+
+  # --- Discord Mention Configuration ---
+  # Configure who to mention/ping when alerts are sent
+  # 
+  # Option 1: Simple list - mentions these users/roles for ALL alerts
+  # discord_mentions:
+  #   - "123456789012345678"  # User ID
+  #   - "987654321098765432"  # Another user ID
+  #   - "&456789012345678901" # Role ID (prefix with &)
+  #
+  # Option 2: Level-based mentions - different people for different severity levels
+  # Users in higher severity levels also get notified for that level and above
+  # (e.g., ERROR watchers get notified for ERROR, CRITICAL, and FATAL)
+  discord_mentions:
+    WARNING:
+      - "123456789012345678"  # ops-team user
+    ERROR:
+      - "123456789012345678"  # ops-team user
+      - "234567890123456789"  # senior-ops user
+    CRITICAL:
+      - "123456789012345678"  # ops-team user
+      - "234567890123456789"  # senior-ops user
+      - "345678901234567890"  # team-lead user
+      - "&456789012345678901" # @oncall-team role
+    FATAL:
+      - "123456789012345678"  # ops-team user
+      - "234567890123456789"  # senior-ops user
+      - "345678901234567890"  # team-lead user
+      - "456789012345678901"  # cto user
+      - "&456789012345678901" # @oncall-team role
+      - "&567890123456789012" # @leadership role
+  
+  # To disable mentions, either:
+  # 1. Comment out the discord_mentions section entirely
+  # 2. Set it to an empty object: discord_mentions: {}
+  # 3. Set it to null: discord_mentions: null
+
+  # If true: includes both the full batch summary and the escalated findings
+  # If false: only the escalated section (e.g., WARNING and above) will be sent
+  send_full_summary: false
+
+  # Output format for alerts.
+  # Currently supported: 'discord'
+  # Planned: 'slack', 'teams', 'stdout', 'file', etc.
+  alert_format: discord
+
+  # --- Advanced monitoring settings ---
+  
+  # Maximum number of log lines to buffer before forcing a flush
+  max_buffer_size: 10000
+  
+  # Maximum length of a single log line (longer lines are truncated)
+  max_line_length: 10000
+  
+  # Rate limiting settings
+  rate_limit_window: 60  # Time window in seconds
+  rate_limit_max_alerts: 10  # Max alerts per window
+  
+  # Deduplication settings
+  dedup_enabled: true  # Enable deduplication of similar alerts
+  dedup_window: 300  # Time window in seconds for deduplication
+
+
+# --- Web Dashboard Configuration ---
+
+web:
+  # Enable or disable the web dashboard
+  enabled: true
+  
+  # Interface to bind to
+  # - "127.0.0.1" = localhost only (more secure)
+  # - "0.0.0.0" = all interfaces (needed for remote access)
+  host: "0.0.0.0"
+  
+  # Port for the web dashboard
+  # Default: 5123 (you can change this to any available port)
+  port: 5123
+  
+  # --- Authentication Settings ---
+  # IMPORTANT: Change these credentials immediately after installation!
+  # 
+  # User accounts for web dashboard access
+  # Passwords should be hashed using werkzeug.security.generate_password_hash()
+  # 
+  # To generate a password hash:
+  # python3 -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your-password'))"
+  users:
+    # Default admin user - CHANGE THIS PASSWORD!
+    admin: "changeme"  # Plain text password will be hashed on first run
+    
+    # Example of adding more users with hashed passwords:
+    # viewer: "$2b$12$YourHashedPasswordHere"
+    # analyst: "$2b$12$AnotherHashedPassword"
+  
+  # Session configuration
+  session_timeout: 3600  # Session timeout in seconds (default: 1 hour)
+  
+  # --- Dashboard Settings ---
+  
+  # Maximum number of log entries to keep in memory for display
+  max_log_entries: 1000
+  
+  # How often to push updates to connected browsers (in seconds)
+  update_interval: 1.0
+  
+  # --- SSL/TLS Configuration (Optional) ---
+  # For production use, it's recommended to use a reverse proxy (nginx)
+  # or enable SSL here for encrypted connections
+  ssl:
+    enabled: false
+    cert_file: "/etc/logwhisperer/ssl/cert.pem"
+    key_file: "/etc/logwhisperer/ssl/key.pem"
+
+
+# --- Additional Settings ---
+
+# Directory for storing analysis reports
+report_dir: "reports"
+
+# Cache settings for AI summarization
+cache_ttl: 300  # Cache time-to-live in seconds
+use_cache: true  # Enable caching of AI responses
+analyze_logs: true  # Perform log analysis before summarization
+
+
+# --- How to find Discord User/Role IDs ---
+#
+# To get user IDs:
+# 1. Enable Developer Mode in Discord (Settings > Advanced > Developer Mode)
+# 2. Right-click on a user and select "Copy User ID"
+#
+# To get role IDs:
+# 1. Enable Developer Mode in Discord
+# 2. Go to Server Settings > Roles
+# 3. Right-click on a role and select "Copy Role ID"
+# 4. Prefix role IDs with "&" in the config
+#
+# Note: The bot/webhook must have permission to mention these users/roles
+
+
+# --- Web Dashboard Access ---
+#
+# After starting the web dashboard service:
+# 1. Access the dashboard at: http://your-server-ip:5123
+# 2. Login with the credentials configured above
+# 3. Monitor logs in real-time through the web interface
+#
+# To start the web dashboard:
+# - Standalone: logwhisperer-web
+# - Service: sudo systemctl start logwhisperer-web
+#
+# Security recommendations:
+# 1. Always use HTTPS in production (configure nginx reverse proxy)
+# 2. Change default passwords immediately
+# 3. Use firewall rules to restrict access
+# 4. Consider VPN access for remote monitoring

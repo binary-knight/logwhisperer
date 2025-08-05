@@ -1,0 +1,67 @@
+# Development Dockerfile for LogWhisperer
+# This version runs from source code for easier development
+
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    vim \
+    tini \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ollama
+RUN curl -fsSL https://ollama.com/install.sh | sh
+
+# Create non-root user
+RUN useradd -m -u 1000 -s /bin/bash logwhisperer
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Install development dependencies
+RUN pip install --no-cache-dir \
+    ipython \
+    ipdb \
+    pytest \
+    pytest-watch \
+    black \
+    flake8 \
+    mypy
+
+# Create necessary directories
+RUN mkdir -p \
+    /var/log/logwhisperer \
+    /opt/logwhisperer/reports \
+    /opt/logwhisperer/models \
+    /home/logwhisperer/.ollama \
+    /etc/logwhisperer \
+    && chown -R logwhisperer:logwhisperer \
+    /var/log/logwhisperer \
+    /opt/logwhisperer \
+    /home/logwhisperer/.ollama
+
+# Copy entrypoint
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Environment variables
+ENV OLLAMA_HOST=http://localhost:11434 \
+    OLLAMA_MODELS_DIR=/opt/logwhisperer/models \
+    LOGWHISPERER_CONFIG=/etc/logwhisperer/config.yaml \
+    PYTHONPATH=/app:$PYTHONPATH \
+    PYTHONUNBUFFERED=1
+
+# Switch to non-root user
+USER logwhisperer
+
+# Use tini for proper signal handling
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/entrypoint.sh"]
+
+# Default command for development
+CMD ["python", "/app/logwhisperer.py", "monitor"]

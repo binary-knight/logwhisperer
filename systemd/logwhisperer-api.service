@@ -1,0 +1,27 @@
+[Unit]
+Description=LogWhisperer API Server
+After=network.target
+Before=logwhisperer-web.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/logwhisperer
+ExecStart=/usr/bin/python3 /opt/logwhisperer/api_server.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=logwhisperer-api
+
+# Environment
+Environment="PYTHONUNBUFFERED=1"
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Resource limits
+LimitNOFILE=65536
+MemoryLimit=1G
+
+[Install]
+WantedBy=multi-user.target
