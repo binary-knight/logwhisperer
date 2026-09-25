@@ -1,6 +1,6 @@
 [Unit]
 Description=LogWhisperer Web Dashboard
-Documentation=https://github.com/yourusername/logwhisperer
+Documentation=https://github.com/binary-knight/logwhisperer
 After=network-online.target logwhisperer.service
 Wants=network-online.target
 

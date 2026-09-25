@@ -718,7 +718,7 @@ sudo systemctl status logwhisperer-api
 sudo systemctl status logwhisperer-web
 \`\`\`
 
-For support, visit: https://github.com/yourusername/logwhisperer
+For support, visit: https://github.com/binary-knight/logwhisperer
 EOF
     
     # Create version file

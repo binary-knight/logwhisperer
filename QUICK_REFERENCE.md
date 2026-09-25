@@ -4,7 +4,7 @@
 
 ### Setup
 ```bash
-git clone https://github.com/yourusername/logwhisperer.git
+git clone https://github.com/binary-knight/logwhisperer.git
 cd logwhisperer
 python -m venv venv
 source venv/bin/activate
@@ -190,6 +190,6 @@ logwhisperer/
 ## 🔗 Useful Links
 
 - [Full Docs](docs/README.md)
-- [GitHub Issues](https://github.com/yourusername/logwhisperer/issues)
+- [GitHub Issues](https://github.com/binary-knight/logwhisperer/issues)
 - [Discord Community](https://discord.gg/your-invite)
 - [Ollama Docs](https://github.com/jmorganca/ollama)

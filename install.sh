@@ -724,7 +724,7 @@ install_services() {
         cat > "/etc/systemd/system/logwhisperer.service" << EOF
 [Unit]
 Description=LogWhisperer Monitoring Agent
-Documentation=https://github.com/yourusername/logwhisperer
+Documentation=https://github.com/binary-knight/logwhisperer
 After=network-online.target
 Wants=network-online.target
 

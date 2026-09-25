@@ -2,12 +2,8 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)](https://hub.docker.com/r/yourusername/logwhisperer)
-[![Discord](https://img.shields.io/discord/YOUR_SERVER_ID?logo=discord)](https://discord.gg/YOUR_INVITE)
 
 AI-powered log analysis and monitoring tool that uses local LLMs to provide intelligent insights from your system logs.
-
-![LogWhisperer Demo](docs/assets/demo.gif)
 
 ## ✨ Features
 
@@ -15,34 +11,13 @@ AI-powered log analysis and monitoring tool that uses local LLMs to provide inte
 - 📊 **Multiple Log Sources** - Supports journalctl, files, and Docker containers  
 - 🚨 **Real-time Alerts** - Discord notifications with @mentions
 - 🔍 **Smart Summarization** - Intelligent pattern detection
-- 🐳 **Docker Ready** - Full containerization support
 - 🛡️ **Production Ready** - Rate limiting, deduplication, caching
 
 ## 🚀 Quick Start
 
-### Option 1: Download Binary (Easiest)
-```bash
-# Download latest release
-wget https://github.com/yourusername/logwhisperer/releases/latest/download/logwhisperer_linux_x86_64.zip
-unzip logwhisperer_linux_x86_64.zip
-sudo ./install.sh
-
-# Test it
-logwhisperer test
-```
-
-### Option 2: Docker (Recommended)
-```bash
-# Clone and run with docker-compose
-git clone https://github.com/yourusername/logwhisperer.git
-cd logwhisperer
-docker-compose up -d
-```
-
-### Option 3: From Source
 ```bash
 # Clone and install
-git clone https://github.com/yourusername/logwhisperer.git
+git clone https://github.com/binary-knight/logwhisperer.git
 cd logwhisperer
 pip install -r requirements.txt
 python logwhisperer.py --help
@@ -108,41 +83,18 @@ pytest
 ./build.sh
 ```
 
-### CI/CD
-```bash
-# Tag a release
-git tag v1.0.0
-git push origin v1.0.0
-# GitHub Actions handles the rest!
-```
-
-## 🐳 Docker
-
-```bash
-# Quick start
-docker-compose up -d
-
-# With external Ollama
-docker-compose --profile external-ollama up -d
-
-# Development mode
-docker-compose --profile development up
-```
-
 ## 📚 Documentation
 
 - [Full Documentation](docs/README.md)
-- [Configuration Guide](docs/configuration.md)
-- [Docker Guide](docs/docker.md)
-- [Development Guide](docs/development.md)
+- [Quick Reference](QUICK_REFERENCE.md)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md).
+Contributions are welcome. Open an issue first for anything large.
 
 ```bash
 # Setup dev environment
-git clone https://github.com/yourusername/logwhisperer.git
+git clone https://github.com/binary-knight/logwhisperer.git
 cd logwhisperer
 pip install -r requirements-dev.txt
 pre-commit install
@@ -156,14 +108,12 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 - [Ollama](https://ollama.ai/) for local LLM support
 - [Nuitka](https://nuitka.net/) for Python compilation
-- All our [contributors](https://github.com/yourusername/logwhisperer/graphs/contributors)
+- All our [contributors](https://github.com/binary-knight/logwhisperer/graphs/contributors)
 
 ## 🔗 Links
 
-- [Releases](https://github.com/yourusername/logwhisperer/releases)
-- [Docker Hub](https://hub.docker.com/r/yourusername/logwhisperer)
-- [Issues](https://github.com/yourusername/logwhisperer/issues)
-- [Discussions](https://github.com/yourusername/logwhisperer/discussions)
+- [Releases](https://github.com/binary-knight/logwhisperer/releases)
+- [Issues](https://github.com/binary-knight/logwhisperer/issues)
 
 ---
 

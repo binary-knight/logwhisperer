@@ -26,35 +26,17 @@ LogWhisperer is an AI-powered log analysis and monitoring tool that uses local L
 
 ## Quick Start
 
-### Using Pre-built Release
 ```bash
-# Download the latest release
-wget https://github.com/yourusername/logwhisperer/releases/latest/download/logwhisperer_v1.0.0_linux_x86_64.zip
-
-# Extract
-unzip logwhisperer_v1.0.0_linux_x86_64.zip
-
-# Install
-sudo ./install.sh
+# Clone and install from source
+git clone https://github.com/binary-knight/logwhisperer.git
+cd logwhisperer
+pip install -r requirements.txt
 
 # Run a test
-logwhisperer test
+python logwhisperer.py test
 
 # Summarize recent errors
-logwhisperer summarize --source journalctl --priority err
-```
-
-### Using Docker
-```bash
-# Using docker-compose (recommended)
-docker-compose up -d
-
-# Or using docker directly
-docker run -d \
-  --name logwhisperer \
-  -v $(pwd)/config.yaml:/etc/logwhisperer/config.yaml \
-  -e DISCORD_WEBHOOK_URL="your-webhook-url" \
-  ghcr.io/yourusername/logwhisperer:latest
+python logwhisperer.py summarize --source journalctl --priority err
 ```
 
 ## Installation
@@ -68,7 +50,7 @@ docker run -d \
 ### Method 1: Install Script (Recommended)
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/logwhisperer.git
+git clone https://github.com/binary-knight/logwhisperer.git
 cd logwhisperer
 
 # Run installer
@@ -99,7 +81,7 @@ sudo ln -s /opt/logwhisperer/logwhisperer /usr/local/bin/logwhisperer
 ### Method 3: From Source
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/logwhisperer.git
+git clone https://github.com/binary-knight/logwhisperer.git
 cd logwhisperer
 
 # Install dependencies
@@ -120,7 +102,7 @@ python logwhisperer.py --help
 ### Development Build
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/logwhisperer.git
+git clone https://github.com/binary-knight/logwhisperer.git
 cd logwhisperer
 
 # Install development dependencies
@@ -331,7 +313,7 @@ docker run -d \
 ### Setting Up Development Environment
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/logwhisperer.git
+git clone https://github.com/binary-knight/logwhisperer.git
 cd logwhisperer
 
 # Create virtual environment
@@ -495,7 +477,7 @@ tail -f /var/log/logwhisperer/logwhisperer.log
 1. Check logs: `/var/log/logwhisperer/`
 2. Run diagnostics: `logwhisperer test`
 3. Enable debug logging
-4. Check [GitHub Issues](https://github.com/yourusername/logwhisperer/issues)
+4. Check [GitHub Issues](https://github.com/binary-knight/logwhisperer/issues)
 5. Join [Discord Community](https://discord.gg/your-invite)
 
 ## Performance Tuning
@@ -537,11 +519,11 @@ LogWhisperer is released under the MIT License. See LICENSE file for details.
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome. Open an issue first for anything large.
 
 ## Support
 
 - 📧 Email: support@logwhisperer.example.com
 - 💬 Discord: [Join our community](https://discord.gg/your-invite)
-- 🐛 Issues: [GitHub Issues](https://github.com/yourusername/logwhisperer/issues)
-- 📖 Wiki: [GitHub Wiki](https://github.com/yourusername/logwhisperer/wiki)
+- 🐛 Issues: [GitHub Issues](https://github.com/binary-knight/logwhisperer/issues)
+- 📖 Wiki: [GitHub Wiki](https://github.com/binary-knight/logwhisperer/wiki)
